@@ -12,7 +12,7 @@ Pydoll, чей первый стабильный релиз, версия 1.0, �
 для большинства современных задач скрейпинга. Следуя этому пошаговому руководству, вы сможете легко настроить и развернуть веб-скрейпер для сбора 
 данных с динамических веб-сайтов и преодолеть распространенные проблемы, такие как блокировка IP-адресов и CAPTCHA.
 
-Всегда помните о юридических и этических аспектах веб-скрейпинга, а также используйте прокси и задержки, чтобы избежать перегрузки целевых серверов.
+*ДИСКЛЕЙМЕР* Всегда помните о юридических и этических аспектах веб-скрейпинга, а также используйте прокси и задержки, чтобы избежать перегрузки целевых серверов.
 
 
 ---
@@ -180,70 +180,70 @@ Pydoll предлагает два подхода для обхода Cloudflare
 1.  **Подход с использованием контекстного менеджера (Context Manager Approach)**:
     Этот метод обрабатывает антибот-защиту **синхронно**, приостанавливая выполнение скрипта до тех пор, пока защита не будет успешно пройдена.
 
-    ```python
-    import asyncio
-    from pydoll.browser.chrome import Chrome
-    from pydoll.constants import By # Необходим для By.CSS_SELECTOR
+```python
+import asyncio
+from pydoll.browser.chrome import Chrome
+from pydoll.constants import By # Необходим для By.CSS_SELECTOR
 
-    async def main():
-        async with Chrome() as browser:
-            await browser.start()
-            page = await browser.get_page()
+async def main():
+    async with Chrome() as browser:
+        await browser.start()
+        page = await browser.get_page()
 
-            # Использование контекстного менеджера для автоматического обхода Cloudflare
-            async with page.expect_and_bypass_cloudflare_captcha():
-                # Подключение к странице, защищенной Cloudflare
-                await page.go_to("https://www.scrapingcourse.com/antibot-challenge")
-                print("Waiting for Cloudflare anti-bot to be handled...")
+        # Использование контекстного менеджера для автоматического обхода Cloudflare
+        async with page.expect_and_bypass_cloudflare_captcha():
+            # Подключение к странице, защищенной Cloudflare
+            await page.go_to("https://www.scrapingcourse.com/antibot-challenge")
+            print("Waiting for Cloudflare anti-bot to be handled...")
 
-            # Этот код выполняется только после успешного обхода антибота
-            print("Cloudflare anti-bot bypassed! Continuing with automation...")
+        # Этот код выполняется только после успешного обхода антибота
+        print("Cloudflare anti-bot bypassed! Continuing with automation...")
 
-            # Извлечение текста с успешной страницы
-            await page.wait_element(By.CSS_SELECTOR, "#challenge-title", timeout=3)
-            success_element = await page.find_element(By.CSS_SELECTOR, "#challenge-title")
-            success_text = await success_element.get_element_text()
-            print(success_text)
+        # Извлечение текста с успешной страницы
+        await page.wait_element(By.CSS_SELECTOR, "#challenge-title", timeout=3)
+        success_element = await page.find_element(By.CSS_SELECTOR, "#challenge-title")
+        success_text = await success_element.get_element_text()
+        print(success_text)
 
-    if __name__ == "__main__":
-        asyncio.run(main())
-    ```
+if __name__ == "__main__":
+    asyncio.run(main())
+```
     При запуске этого скрипта, окно Chrome будет автоматически обходить защиту и загружать целевую страницу.
 
 2.  **Подход с фоновой обработкой (Background Processing Approach)**:
     Этот подход позволяет Pydoll обрабатывать антибот-защиту **асинхронно в фоновом режиме**, что дает вашему скрейперу возможность выполнять другие операции, пока происходит обход Cloudflare.
 
-    ```python
-    import asyncio
-    from pydoll.browser.chrome import Chrome
-    from pydoll.constants import By
+```python
+import asyncio
+from pydoll.browser.chrome import Chrome
+from pydoll.constants import By
 
-    async def main():
-        async with Chrome() as browser:
-            await browser.start()
-            page = await browser.get_page()
+async def main():
+    async with Chrome() as browser:
+        await browser.start()
+        page = await browser.get_page()
 
-            # Включение фоновой обработки обхода Cloudflare
-            await page.enable_auto_solve_cloudflare_captcha()
+        # Включение фоновой обработки обхода Cloudflare
+        await page.enable_auto_solve_cloudflare_captcha()
 
-            # Подключение к странице, защищенной Cloudflare
-            await page.go_to("https://www.scrapingcourse.com/antibot-challenge")
-            print("Page loaded, Cloudflare anti-bot will be handled in the background...")
+        # Подключение к странице, защищенной Cloudflare
+        await page.go_to("https://www.scrapingcourse.com/antibot-challenge")
+        print("Page loaded, Cloudflare anti-bot will be handled in the background...")
 
-            # Здесь можно выполнять другие операции, пока обход CAPTCHA идет в фоне
+        # Здесь можно выполнять другие операции, пока обход CAPTCHA идет в фоне
 
-            # Отключение автоматического решения антибота, когда оно больше не требуется
-            await page.disable_auto_solve_cloudflare_captcha()
+        # Отключение автоматического решения антибота, когда оно больше не требуется
+        await page.disable_auto_solve_cloudflare_captcha()
 
-            # Извлечение текста с успешной страницы
-            await page.wait_element(By.CSS_SELECTOR, "#challenge-title", timeout=3)
-            success_element = await page.find_element(By.CSS_SELECTOR, "#challenge-title")
-            success_text = await success_element.get_element_text()
-            print(success_text)
+        # Извлечение текста с успешной страницы
+        await page.wait_element(By.CSS_SELECTOR, "#challenge-title", timeout=3)
+        success_element = await page.find_element(By.CSS_SELECTOR, "#challenge-title")
+        success_text = await success_element.get_element_text()
+        print(success_text)
 
-    if __name__ == "__main__":
-        asyncio.run(main())
-    ```
+if __name__ == "__main__":
+    asyncio.run(main())
+```
     В этом случае вывод скрипта покажет, что страница загружена, и обход Cloudflare будет обрабатываться в фоновом режиме.
 
 **Важное замечание**: Обход Cloudflare может не всегда работать из-за таких факторов, как репутация IP-адреса или история навигации.
@@ -260,67 +260,67 @@ Bright Data является одним из крупнейших поставщ
 
 1.  **Получение учетных данных прокси Bright Data**:
     Вам потребуется получить хост, порт, имя пользователя и пароль вашего прокси из дашборда Bright Data. Из этих деталей вы сможете создать URL прокси:
-    ```python
-    proxy_url = "<brightdata_proxy_username>: <brightdata_proxy_password>@<brightdata_proxy_host>:<brightdata_proxy_port>";
-    ```
+```python
+proxy_url = "<brightdata_proxy_username>: <brightdata_proxy_password>@<brightdata_proxy_host>:<brightdata_proxy_port>";
+```
    
 
 2.  **Конфигурация прокси в Pydoll (через `Options`)**:
     Pydoll позволяет интегрировать прокси, используя класс `Options` для передачи аргументов браузера.
 
-    ```python
-    import asyncio
-    from pydoll.browser.chrome import Chrome
-    from pydoll.browser.options import Options # Импортируем Options
-    from pydoll.constants import By
+```python
+import asyncio
+from pydoll.browser.chrome import Chrome
+from pydoll.browser.options import Options # Импортируем Options
+from pydoll.constants import By
 
-    async def main():
-        # Создание объекта Options
-        options = Options()
+async def main():
+    # Создание объекта Options
+    options = Options()
 
-        # URL вашего прокси Bright Data. Замените заглушки на ваши реальные данные.
-        proxy_url = "brd-customer-<customer_id>-zone-<zone_name>:<password>@<host>:<port>"
-        # Пример: proxy_url = "brd-customer-xxxxxx-zone-residential:your_password@brd.superproxy.io:22225"
+    # URL вашего прокси Bright Data. Замените заглушки на ваши реальные данные.
+    proxy_url = "brd-customer-<customer_id>-zone-<zone_name>:<password>@<host>:<port>"
+    # Пример: proxy_url = "brd-customer-xxxxxx-zone-residential:your_password@brd.superproxy.io:22225"
 
-        # Конфигурация опции интеграции прокси
-        options.add_argument(f"--proxy-server={proxy_url}")
+    # Конфигурация опции интеграции прокси
+    options.add_argument(f"--proxy-server={proxy_url}")
 
-        # Для избежания потенциальных SSL ошибок
-        options.add_argument("--ignore-certificate-errors")
+    # Для избежания потенциальных SSL ошибок
+    options.add_argument("--ignore-certificate-errors")
 
-        # Запуск браузера с конфигурацией прокси
-        async with Chrome(options=options) as browser:
-            await browser.start()
-            page = await browser.get_page()
+    # Запуск браузера с конфигурацией прокси
+    async with Chrome(options=options) as browser:
+        await browser.start()
+        page = await browser.get_page()
 
-            # Посещение специальной страницы, которая возвращает IP-адрес вызывающей стороны
-            await page.go_to("https://httpbin.io/ip")
+        # Посещение специальной страницы, которая возвращает IP-адрес вызывающей стороны
+        await page.go_to("https://httpbin.io/ip")
 
-            # Извлечение содержимого страницы, содержащего только IP-адрес входящего запроса, и вывод его
-            body_element = await page.find_element(By.CSS_SELECTOR, "body")
-            body_text = await body_element.get_element_text()
-            print(f"Current IP address: {body_text}")
+        # Извлечение содержимого страницы, содержащего только IP-адрес входящего запроса, и вывод его
+        body_element = await page.find_element(By.CSS_SELECTOR, "body")
+        body_text = await body_element.get_element_text()
+        print(f"Current IP address: {body_text}")
 
-    if __name__ == "__main__":
-        asyncio.run(main())
-    ```
+if __name__ == "__main__":
+    asyncio.run(main())
+```
     Каждый раз при запуске этого скрипта вы будете видеть другой выходной IP-адрес благодаря ротации прокси Bright Data. Важно отметить, что менеджер прокси Pydoll поддерживает прокси, защищенные паролем, что обычно не поддерживается флагом `--proxy-server` Chrome.
 
 3.  **Конфигурация прокси в Pydoll (через `page.set_proxy()`)**:
     Другой, более прямой способ настройки прокси для конкретной страницы:
 
-    ```python
-    # ... внутри функции main() после получения объекта page ...
-    await page.set_proxy({
-        "host": "brd.superproxy.io", # Пример хоста Bright Data
-        "port": 33335,               # Пример порта Bright Data
-        "username": "your_username", # Ваши учетные данные
-        "password": "your_password"  # Ваши учетные данные
-    })
-    # Теперь все запросы с этой страницы будут проходить через указанный прокси
-    await page.go_to("https://httpbin.io/ip")
-    # ...
-    ```
+```python
+# ... внутри функции main() после получения объекта page ...
+await page.set_proxy({
+    "host": "brd.superproxy.io", # Пример хоста Bright Data
+    "port": 33335,               # Пример порта Bright Data
+    "username": "your_username", # Ваши учетные данные
+    "password": "your_password"  # Ваши учетные данные
+})
+# Теперь все запросы с этой страницы будут проходить через указанный прокси
+await page.go_to("https://httpbin.io/ip")
+# ...
+```
    
 
 ---
@@ -347,9 +347,3 @@ Bright Data является одним из крупнейших поставщ
 *   **Web Scraper APIs, Web Unlocker, SERP API**: Готовые API-решения для извлечения структурированных данных из сотен доменов или обхода защит.
 
 ---
-
-### **Заключение**
-
-Pydoll — это мощный и современный инструмент, который значительно упрощает веб-скрейпинг в 2025 году. Его асинхронная архитектура, способность обрабатывать JavaScript-тяжелые веб-сайты и встроенный обход Cloudflare делают его отличным выбором для большинства современных задач скрейпинга. Следуя этому пошаговому руководству, вы сможете легко настроить и развернуть веб-скрейпер для сбора данных с динамических веб-сайтов и преодолеть распространенные проблемы, такие как блокировка IP-адресов и CAPTCHA.
-
-Всегда помните о юридических и этических аспектах веб-скрейпинга, а также используйте прокси и задержки, чтобы избежать перегрузки целевых серверов.
