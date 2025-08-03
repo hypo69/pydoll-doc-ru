@@ -54,15 +54,15 @@ python -m venv venv
 3.  **Активация виртуальной среды**:
     *   **На Linux или macOS**:
 
-```bash
-source venv/bin/activate
-```
+    ```bash
+    source venv/bin/activate
+    ```
        
     *   **На Windows**:
 
-```bash
-venv\Scripts\activate
-```
+    ```bash
+    venv\Scripts\activate
+    ```
        
 4.  **Создание файла скрейпера**:
     В вашей любимой Python IDE (например, Visual Studio Code или PyCharm) создайте пустой файл с именем `scraper.py` внутри папки проекта. Вскоре он будет содержать логику извлечения данных.
